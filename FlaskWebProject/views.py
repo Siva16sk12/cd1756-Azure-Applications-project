@@ -82,7 +82,11 @@ def post(id):
     return render_template("post.html", form=form)
 
 
-# ---------- MICROSOFT LOGIN ----------
+
+
+# ----------- MICROSOFT LOGIN -----------
+
+import urllib.parse
 
 @app.route("/login_microsoft")
 def login_microsoft():
@@ -91,18 +95,16 @@ def login_microsoft():
     client_id = app.config["AZURE_CLIENT_ID"]
     redirect_uri = app.config["AZURE_REDIRECT_URI"]
 
+    redirect_uri = urllib.parse.quote(redirect_uri)
+
     auth_url = (
-        "https://login.microsoftonline.com/"
-        + tenant
-        + "/oauth2/v2.0/authorize"
-        + "?client_id="
-        + client_id
-        + "&response_type=code"
-        + "&redirect_uri="
-        + redirect_uri
-        + "&response_mode=query"
-        + "&scope=User.Read"
-        + "&state=12345"
+        f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize"
+        f"?client_id={client_id}"
+        f"&response_type=code"
+        f"&redirect_uri={redirect_uri}"
+        f"&response_mode=query"
+        f"&scope=User.Read"
+        f"&state=12345"
     )
 
     return redirect(auth_url)
@@ -123,7 +125,7 @@ def auth():
         "grant_type": "authorization_code",
         "code": code,
         "redirect_uri": app.config["AZURE_REDIRECT_URI"],
-        "scope": "User.Read"
+        "scope": "User.Read",
     }
 
     token = requests.post(token_url, data=data).json()

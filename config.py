@@ -15,6 +15,7 @@ SQLALCHEMY_DATABASE_URI = os.getenv(
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+
 # Flask secret key
 SECRET_KEY = os.getenv("SECRET_KEY", "this_is_my_secret_key")
 
@@ -26,8 +27,8 @@ BLOB_CONTAINER = os.getenv("BLOB_CONTAINER", "images")
 
 
 # Microsoft Login (Azure Entra ID)
-AZURE_CLIENT_ID = "PUT_YOUR_CLIENT_ID"
-AZURE_CLIENT_SECRET = "PUT_YOUR_CLIENT_SECRET"
-AZURE_TENANT_ID = "PUT_YOUR_TENANT_ID"
+AZURE_CLIENT_ID = os.getenv("AZURE_CLIENT_ID", "PUT_YOUR_CLIENT_ID")
+AZURE_CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET", "PUT_YOUR_CLIENT_SECRET")
+AZURE_TENANT_ID = os.getenv("AZURE_TENANT_ID", "PUT_YOUR_TENANT_ID")
 
 AZURE_REDIRECT_URI = "https://udacitycms-hsggc0fbb9cpfayv.centralus-01.azurewebsites.net/auth"

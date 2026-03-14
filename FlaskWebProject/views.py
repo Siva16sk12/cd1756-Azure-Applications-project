@@ -8,7 +8,9 @@ import requests
 import urllib.parse
 import logging
 
-logging.basicConfig(level=logging.INFO)
+# Ensure logs appear in Azure Log Stream
+
+logging.basicConfig(level=logging.INFO, force=True)
 
 # ---------------- HOME ----------------
 
@@ -36,6 +38,7 @@ if form.validate_on_submit():
         logging.info("SUCCESSFUL LOGIN: " + form.username.data)
 
         login_user(user)
+
         return redirect(url_for('home'))
 
     else:
@@ -114,7 +117,11 @@ if form.validate_on_submit():
 return render_template("post.html", form=form)
 ```
 
-# ---------------- MICROSOFT LOGIN ----------------
+# =========================================================
+
+# MICROSOFT LOGIN
+
+# =========================================================
 
 @app.route("/login_microsoft")
 def login_microsoft():
@@ -135,6 +142,8 @@ auth_url = (
     f"&scope=User.Read"
     f"&state=12345"
 )
+
+logging.info("Redirecting user to Microsoft login")
 
 return redirect(auth_url)
 ```
@@ -183,10 +192,11 @@ if not user:
     db.session.add(user)
     db.session.commit()
 
+    logging.info("New Microsoft user created: " + username)
+
 login_user(user)
 
 logging.info("MICROSOFT LOGIN SUCCESS: " + username)
 
 return redirect(url_for("home"))
 ```
-

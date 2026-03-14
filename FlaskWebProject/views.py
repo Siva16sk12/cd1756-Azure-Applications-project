@@ -3,14 +3,8 @@ from flask_login import login_user, logout_user, login_required
 from FlaskWebProject import app, db
 from FlaskWebProject.models import User, Post
 from FlaskWebProject.forms import LoginForm, PostForm
-
 import requests
 import urllib.parse
-import logging
-
-# Ensure logs appear in Azure Log Stream
-
-logging.basicConfig(level=logging.INFO, force=True)
 
 # ---------------- HOME ----------------
 
@@ -35,7 +29,7 @@ if form.validate_on_submit():
 
     if user and user.check_password(form.password.data):
 
-        logging.info("SUCCESSFUL LOGIN: " + form.username.data)
+        print("SUCCESSFUL LOGIN:", form.username.data)
 
         login_user(user)
 
@@ -43,7 +37,7 @@ if form.validate_on_submit():
 
     else:
 
-        logging.warning("FAILED LOGIN ATTEMPT: " + form.username.data)
+        print("FAILED LOGIN ATTEMPT:", form.username.data)
 
         flash("Invalid username or password")
 
@@ -59,7 +53,7 @@ def logout():
 ```
 logout_user()
 
-logging.info("User logged out")
+print("USER LOGGED OUT")
 
 return redirect(url_for('login'))
 ```
@@ -84,7 +78,7 @@ if form.validate_on_submit():
         True
     )
 
-    logging.info("New post created")
+    print("POST CREATED")
 
     return redirect(url_for("home"))
 
@@ -110,18 +104,14 @@ if form.validate_on_submit():
         1
     )
 
-    logging.info("Post updated")
+    print("POST UPDATED:", id)
 
     return redirect(url_for("home"))
 
 return render_template("post.html", form=form)
 ```
 
-# =========================================================
-
-# MICROSOFT LOGIN
-
-# =========================================================
+# ---------------- MICROSOFT LOGIN ----------------
 
 @app.route("/login_microsoft")
 def login_microsoft():
@@ -143,7 +133,7 @@ auth_url = (
     f"&state=12345"
 )
 
-logging.info("Redirecting user to Microsoft login")
+print("REDIRECTING TO MICROSOFT LOGIN")
 
 return redirect(auth_url)
 ```
@@ -192,11 +182,12 @@ if not user:
     db.session.add(user)
     db.session.commit()
 
-    logging.info("New Microsoft user created: " + username)
+    print("NEW MICROSOFT USER CREATED:", username)
 
 login_user(user)
 
-logging.info("MICROSOFT LOGIN SUCCESS: " + username)
+print("MICROSOFT LOGIN SUCCESS:", username)
 
 return redirect(url_for("home"))
 ```
+

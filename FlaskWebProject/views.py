@@ -33,14 +33,14 @@ if form.validate_on_submit():
 
     if user and user.check_password(form.password.data):
 
-        logging.info(f"Successful login for user: {form.username.data}")
+        logging.info("SUCCESSFUL LOGIN: " + form.username.data)
 
         login_user(user)
         return redirect(url_for('home'))
 
     else:
 
-        logging.warning(f"Failed login attempt for user: {form.username.data}")
+        logging.warning("FAILED LOGIN ATTEMPT: " + form.username.data)
 
         flash("Invalid username or password")
 
@@ -107,18 +107,14 @@ if form.validate_on_submit():
         1
     )
 
-    logging.info(f"Post {id} updated")
+    logging.info("Post updated")
 
     return redirect(url_for("home"))
 
 return render_template("post.html", form=form)
 ```
 
-# =========================================================
-
-# MICROSOFT LOGIN
-
-# =========================================================
+# ---------------- MICROSOFT LOGIN ----------------
 
 @app.route("/login_microsoft")
 def login_microsoft():
@@ -139,8 +135,6 @@ auth_url = (
     f"&scope=User.Read"
     f"&state=12345"
 )
-
-logging.info("Redirecting user to Microsoft login")
 
 return redirect(auth_url)
 ```
@@ -189,13 +183,10 @@ if not user:
     db.session.add(user)
     db.session.commit()
 
-    logging.info(f"New Microsoft user created: {username}")
-
 login_user(user)
 
-logging.info(f"Microsoft login successful for user: {username}")
+logging.info("MICROSOFT LOGIN SUCCESS: " + username)
 
 return redirect(url_for("home"))
 ```
-
 

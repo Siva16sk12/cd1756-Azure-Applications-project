@@ -17,31 +17,32 @@ return render_template("index.html", posts=posts)
 
 # ---------------- LOGIN ----------------
 
+# ---------------- LOGIN ----------------
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
-```
-form = LoginForm()
+    form = LoginForm()
 
-if form.validate_on_submit():
+    if form.validate_on_submit():
 
-    user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(username=form.username.data).first()
 
-    if user and user.check_password(form.password.data):
+        if user and user.check_password(form.password.data):
 
-        print("SUCCESSFUL LOGIN:", form.username.data)
+            print("SUCCESSFUL LOGIN:", form.username.data, flush=True)
 
-        login_user(user)
+            login_user(user)
 
-        return redirect(url_for('home'))
+            return redirect(url_for('home'))
 
-    else:
+        else:
 
-        print("FAILED LOGIN ATTEMPT:", form.username.data)
+            print("FAILED LOGIN ATTEMPT:", form.username.data, flush=True)
 
-        flash("Invalid username or password")
+            flash("Invalid username or password")
 
-return render_template("login.html", form=form)
+    return render_template("login.html", form=form)
 ```
 
 # ---------------- LOGOUT ----------------

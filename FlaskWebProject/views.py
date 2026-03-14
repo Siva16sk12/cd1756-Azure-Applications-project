@@ -3,8 +3,12 @@ from flask_login import login_user, logout_user, login_required
 from FlaskWebProject import app, db
 from FlaskWebProject.models import User, Post
 from FlaskWebProject.forms import LoginForm, PostForm
+
 import requests
 import urllib.parse
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 # ---------------- HOME ----------------
 
@@ -28,10 +32,17 @@ if form.validate_on_submit():
     user = User.query.filter_by(username=form.username.data).first()
 
     if user and user.check_password(form.password.data):
+
+        logging.info(f"Successful login for user: {form.username.data}")
+
         login_user(user)
         return redirect(url_for('home'))
 
-    flash("Invalid username or password")
+    else:
+
+        logging.warning(f"Failed login attempt for user: {form.username.data}")
+
+        flash("Invalid username or password")
 
 return render_template("login.html", form=form)
 ```
@@ -41,8 +52,14 @@ return render_template("login.html", form=form)
 @app.route('/logout')
 @login_required
 def logout():
+
+```
 logout_user()
+
+logging.info("User logged out")
+
 return redirect(url_for('login'))
+```
 
 # ---------------- CREATE POST ----------------
 
@@ -63,6 +80,8 @@ if form.validate_on_submit():
         1,
         True
     )
+
+    logging.info("New post created")
 
     return redirect(url_for("home"))
 
@@ -88,6 +107,8 @@ if form.validate_on_submit():
         1
     )
 
+    logging.info(f"Post {id} updated")
+
     return redirect(url_for("home"))
 
 return render_template("post.html", form=form)
@@ -95,7 +116,7 @@ return render_template("post.html", form=form)
 
 # =========================================================
 
-# MICROSOFT LOGIN (AZURE ENTRA)
+# MICROSOFT LOGIN
 
 # =========================================================
 
@@ -118,6 +139,8 @@ auth_url = (
     f"&scope=User.Read"
     f"&state=12345"
 )
+
+logging.info("Redirecting user to Microsoft login")
 
 return redirect(auth_url)
 ```
@@ -159,13 +182,20 @@ username = user_data.get("displayName", "MicrosoftUser")
 user = User.query.filter_by(username=username).first()
 
 if not user:
+
     user = User(username=username)
     user.set_password("microsoft_login")
+
     db.session.add(user)
     db.session.commit()
 
+    logging.info(f"New Microsoft user created: {username}")
+
 login_user(user)
+
+logging.info(f"Microsoft login successful for user: {username}")
 
 return redirect(url_for("home"))
 ```
+
 

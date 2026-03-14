@@ -3,9 +3,6 @@ from flask_login import login_user, logout_user, login_required
 from FlaskWebProject import app, db
 from FlaskWebProject.models import User, Post
 from FlaskWebProject.forms import LoginForm, PostForm
-from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient
-import requests
 
 
 @app.route('/')
@@ -28,13 +25,14 @@ def login():
         if user and user.check_password(form.password.data):
             login_user(user)
             return redirect(url_for('home'))
-        else:
-            flash("Invalid username or password")
+
+        flash("Invalid username or password")
 
     return render_template("login.html", form=form)
 
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
@@ -49,90 +47,60 @@ def new_post():
     if form.validate_on_submit():
 
         post = Post()
-        post.save_changes(form, request.files['image'], 1, True)
 
-        return redirect(url_for('home'))
+        post.save_changes(
+            form,
+            request.files.get("image"),
+            1,
+            True
+        )
 
-    return render_template("create_post.html", form=form)
+        return redirect(url_for("home"))
+
+    return render_template("post.html", form=form)
 
 
-@app.route('/edit_post/<id>', methods=['GET', 'POST'])
+@app.route('/post/<id>', methods=['GET', 'POST'])
 @login_required
-def edit_post(id):
+def post(id):
 
     post = Post.query.get(id)
+
     form = PostForm(obj=post)
 
     if form.validate_on_submit():
-        post.save_changes(form, request.files['image'], 1)
-        return redirect(url_for('home'))
 
-    return render_template("create_post.html", form=form)
+        post.save_changes(
+            form,
+            request.files.get("image"),
+            1
+        )
+
+        return redirect(url_for("home"))
+
+    return render_template("post.html", form=form)
 
 
-# Microsoft login
+# Microsoft Login
 @app.route("/login_microsoft")
 def login_microsoft():
 
-    tenant = app.config['AZURE_TENANT_ID']
-    client_id = app.config['AZURE_CLIENT_ID']
-    redirect_uri = app.config['AZURE_REDIRECT_URI']
+    tenant = app.config["AZURE_TENANT_ID"]
+    client_id = app.config["AZURE_CLIENT_ID"]
+    redirect_uri = app.config["AZURE_REDIRECT_URI"]
 
-    url = f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize"
+    auth_url = (
+        "https://login.microsoftonline.com/"
+        + tenant
+        + "/oauth2/v2.0/authorize"
+        + "?client_id="
+        + client_id
+        + "&response_type=code"
+        + "&redirect_uri="
+        + redirect_uri
+        + "&response_mode=query"
+        + "&scope=User.Read"
+        + "&state=12345"
+    )
 
-    params = {
-        "client_id": client_id,
-        "response_type": "code",
-        "redirect_uri": redirect_uri,
-        "response_mode": "query",
-        "scope": "User.Read",
-        "state": "12345"
-    }
-
-    request_url = requests.Request('GET', url, params=params).prepare().url
-
-    return redirect(request_url)
-
-
-@app.route("/auth")
-def auth():
-
-    code = request.args.get("code")
-
-    tenant = app.config['AZURE_TENANT_ID']
-
-    token_url = f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
-
-    data = {
-        "client_id": app.config['AZURE_CLIENT_ID'],
-        "client_secret": app.config['AZURE_CLIENT_SECRET'],
-        "grant_type": "authorization_code",
-        "code": code,
-        "redirect_uri": app.config['AZURE_REDIRECT_URI'],
-        "scope": "User.Read"
-    }
-
-    token = requests.post(token_url, data=data).json()
-
-    access_token = token['access_token']
-
-    headers = {"Authorization": f"Bearer {access_token}"}
-
-    user_data = requests.get(
-        "https://graph.microsoft.com/v1.0/me",
-        headers=headers
-    ).json()
-
-    username = user_data["displayName"]
-
-    user = User.query.filter_by(username=username).first()
-
-    if not user:
-        user = User(username=username)
-        user.set_password("azurelogin")
-        db.session.add(user)
-        db.session.commit()
-
-    login_user(user)
-
-    return redirect(url_for("home"))
+    return redirect(auth_url)

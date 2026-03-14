@@ -3,6 +3,7 @@ from flask_login import login_user, logout_user, login_required
 from FlaskWebProject import app, db
 from FlaskWebProject.models import User, Post
 from FlaskWebProject.forms import LoginForm, PostForm
+import requests
 
 
 @app.route('/')
@@ -81,7 +82,8 @@ def post(id):
     return render_template("post.html", form=form)
 
 
-# Microsoft Login
+# ---------- MICROSOFT LOGIN ----------
+
 @app.route("/login_microsoft")
 def login_microsoft():
 
@@ -104,3 +106,47 @@ def login_microsoft():
     )
 
     return redirect(auth_url)
+
+
+@app.route("/auth")
+def auth():
+
+    code = request.args.get("code")
+
+    tenant = app.config["AZURE_TENANT_ID"]
+
+    token_url = f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
+
+    data = {
+        "client_id": app.config["AZURE_CLIENT_ID"],
+        "client_secret": app.config["AZURE_CLIENT_SECRET"],
+        "grant_type": "authorization_code",
+        "code": code,
+        "redirect_uri": app.config["AZURE_REDIRECT_URI"],
+        "scope": "User.Read"
+    }
+
+    token = requests.post(token_url, data=data).json()
+
+    access_token = token["access_token"]
+
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    user_data = requests.get(
+        "https://graph.microsoft.com/v1.0/me",
+        headers=headers
+    ).json()
+
+    username = user_data["displayName"]
+
+    user = User.query.filter_by(username=username).first()
+
+    if not user:
+        user = User(username=username)
+        user.set_password("microsoft_login")
+        db.session.add(user)
+        db.session.commit()
+
+    login_user(user)
+
+    return redirect(url_for("home"))

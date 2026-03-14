@@ -1,6 +1,7 @@
 import os
 
-# Database connection
+# ---------------- DATABASE ----------------
+
 SQLALCHEMY_DATABASE_URI = os.getenv(
     "SQLAZURECONNSTR_DEFAULTCONNECTION",
     "Driver={ODBC Driver 17 for SQL Server};"
@@ -16,19 +17,24 @@ SQLALCHEMY_DATABASE_URI = os.getenv(
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
-# Flask secret key
+# ---------------- FLASK SECRET ----------------
+
 SECRET_KEY = os.getenv("SECRET_KEY", "this_is_my_secret_key")
 
 
-# Azure Blob Storage
+# ---------------- AZURE BLOB STORAGE ----------------
+
 BLOB_ACCOUNT = os.getenv("BLOB_ACCOUNT", "PUT_YOUR_STORAGE_ACCOUNT_NAME")
 BLOB_STORAGE_KEY = os.getenv("BLOB_STORAGE_KEY", "PUT_YOUR_STORAGE_KEY")
 BLOB_CONTAINER = os.getenv("BLOB_CONTAINER", "images")
 
 
-# Microsoft Login (Azure Entra ID)
-AZURE_CLIENT_ID = os.getenv("AZURE_CLIENT_ID", "PUT_YOUR_CLIENT_ID")
-AZURE_CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET", "PUT_YOUR_CLIENT_SECRET")
-AZURE_TENANT_ID = os.getenv("AZURE_TENANT_ID", "PUT_YOUR_TENANT_ID")
+# ---------------- MICROSOFT LOGIN (ENTRA ID) ----------------
+
+AZURE_CLIENT_ID = "cd35ac97-1a68-4b4e-b93b-b270d30ef472"
+
+AZURE_CLIENT_SECRET = "iXU8Q~YxadQVlUM8wNnA3Jq85HBbaVhjfNa6GaSo"
+
+AZURE_TENANT_ID = "f958e84a-92b8-439f-a62d-4f45996b6d07"
 
 AZURE_REDIRECT_URI = "https://udacitycms-hsggc0fbb9cpfayv.centralus-01.azurewebsites.net/auth"

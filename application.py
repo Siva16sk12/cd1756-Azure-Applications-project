@@ -1,6 +1,6 @@
 from FlaskWebProject import app
 
-# This line is required for Azure
+# REQUIRED for Azure
 application = app
 
 if __name__ == "__main__":

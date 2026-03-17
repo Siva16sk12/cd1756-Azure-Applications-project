@@ -1,5 +1,6 @@
 from FlaskWebProject import app
+from flask import render_template
 
 @app.route('/')
 def home():
-    return "App is working 🎉"
+    return render_template("index.html")

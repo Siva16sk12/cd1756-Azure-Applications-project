@@ -1,7 +1,6 @@
 from FlaskWebProject import app
 
-# REQUIRED for Azure
-application = app
+app = app   
 
 if __name__ == "__main__":
     app.run()

@@ -1,39 +1,19 @@
 import os
 
-# ---------------- DATABASE ----------------
+class Config(object):
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key'
 
-SQLALCHEMY_DATABASE_URI = os.getenv(
-    "SQLAZURECONNSTR_DEFAULTCONNECTION",
-    "Driver={ODBC Driver 17 for SQL Server};"
-    "Server=PUT_YOUR_SQL_SERVER.database.windows.net;"
-    "Database=cms;"
-    "Uid=PUT_YOUR_SQL_USERNAME;"
-    "Pwd=PUT_YOUR_SQL_PASSWORD;"
-    "Encrypt=yes;"
-    "TrustServerCertificate=no;"
-    "Connection Timeout=30;"
-)
+    BLOB_ACCOUNT = os.environ.get('BLOB_ACCOUNT')
+    BLOB_STORAGE_KEY = os.environ.get('BLOB_STORAGE_KEY')
+    BLOB_CONTAINER = os.environ.get('BLOB_CONTAINER')
 
-SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQL_SERVER = os.environ.get('SQL_SERVER')
+    SQL_DATABASE = os.environ.get('SQL_DATABASE')
+    SQL_USER_NAME = os.environ.get('SQL_USER_NAME')
+    SQL_PASSWORD = os.environ.get('SQL_PASSWORD')
 
-
-# ---------------- FLASK SECRET ----------------
-
-SECRET_KEY = os.getenv("SECRET_KEY", "this_is_my_secret_key")
-
-
-# ---------------- AZURE BLOB STORAGE ----------------
-
-BLOB_ACCOUNT = os.getenv("BLOB_ACCOUNT", "PUT_YOUR_STORAGE_ACCOUNT_NAME")
-BLOB_STORAGE_KEY = os.getenv("BLOB_STORAGE_KEY", "PUT_YOUR_STORAGE_KEY")
-BLOB_CONTAINER = os.getenv("BLOB_CONTAINER", "images")
-
-
-# ---------------- MICROSOFT LOGIN (ENTRA ID) ----------------
-
-AZURE_CLIENT_ID = "cd35ac97-1a68-4b4e-b93b-b270d30ef472"
-
-AZURE_CLIENT_SECRET = "iXU8Q~YxadQVlUM8wNnA3Jq85HBbaVhjfNa6GaSo"
+    CLIENT_ID = os.environ.get('CLIENT_ID')
+    CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 
 AZURE_TENANT_ID = "f958e84a-92b8-439f-a62d-4f45996b6d07"
 

@@ -7,8 +7,7 @@ from flask_login import login_required, current_user
 # Home page
 @app.route('/')
 def home():
-    posts = Post.query.all()
-    return render_template('index.html', posts=posts)
+    return "App is working 🎉"
 
 
 # Create post

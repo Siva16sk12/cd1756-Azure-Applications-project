@@ -65,16 +65,14 @@ def login():
 
     form = LoginForm()
 
-    if form.validate_on_submit():
+   if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
 
         if user is None or not user.check_password(form.password.data):
-            # LOG FAILED LOGIN - required by rubric
             app.logger.warning('Invalid login attempt for user: %s', form.username.data)
             flash('Invalid username or password')
             return redirect(url_for('login'))
 
-        # LOG SUCCESSFUL LOGIN - required by rubric
         app.logger.info('User %s logged in successfully', user.username)
         login_user(user, remember=form.remember_me.data)
 

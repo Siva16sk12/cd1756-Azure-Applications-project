@@ -11,7 +11,7 @@ from flask_session import Session
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# TODO: Add any logging levels and handlers with app.logger
+# Set up logging
 logging.basicConfig(level=logging.INFO)
 app.logger.setLevel(logging.INFO)
 streamHandler = logging.StreamHandler()

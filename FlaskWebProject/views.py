@@ -12,7 +12,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from FlaskWebProject.models import User, Post
 import msal
 import uuid
-import logging  # ADD THIS
+import logging
 
 imageSourceUrl = 'https://' + app.config['BLOB_ACCOUNT'] + '.blob.core.windows.net/' + app.config['BLOB_CONTAINER'] + '/'
 
@@ -65,7 +65,7 @@ def login():
 
     form = LoginForm()
 
-   if form.validate_on_submit():
+    if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
 
         if user is None or not user.check_password(form.password.data):
@@ -113,10 +113,7 @@ def authorized():
         session["user"] = result.get("id_token_claims")
         user = User.query.filter_by(username="admin").first()
         login_user(user)
-
-        # LOG SUCCESSFUL MICROSOFT LOGIN
         app.logger.info('admin logged in successfully via Microsoft')
-
         _save_cache(cache)
 
     return redirect(url_for('home'))

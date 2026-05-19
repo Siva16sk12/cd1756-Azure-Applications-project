@@ -16,7 +16,7 @@ class Config(object):
 
     SQLALCHEMY_DATABASE_URI = (
         'mssql+pyodbc://{user}%40{server}:{password}@{server}:1433/{db}'
-        '?driver=ODBC+Driver+17+for+SQL+Server'
+        '?driver=ODBC+Driver+17+for+SQL+Server&TrustServerCertificate=yes'
     ).format(
         user=os.environ.get('SQL_USER_NAME', 'cmsadmin'),
         server=os.environ.get('SQL_SERVER', 'cms1.database.windows.net'),

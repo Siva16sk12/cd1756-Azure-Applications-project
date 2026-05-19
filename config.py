@@ -14,23 +14,18 @@ class Config(object):
     SQL_USER_NAME = os.environ.get('SQL_USER_NAME') or 'cmsadmin'
     SQL_PASSWORD = os.environ.get('SQL_PASSWORD') or 'ENTER_YOUR_PASSWORD'
 
-    # CORRECT connection string - %40 is @ symbol encoded
     SQLALCHEMY_DATABASE_URI = (
-        'mssql+pyodbc://'
-        + os.environ.get('SQL_USER_NAME', 'cmsadmin')
-        + '%40'
-        + os.environ.get('SQL_SERVER', 'cms1.database.windows.net')
-        + ':'
-        + os.environ.get('SQL_PASSWORD', 'ENTER_YOUR_PASSWORD')
-        + '@'
-        + os.environ.get('SQL_SERVER', 'cms1.database.windows.net')
-        + ':1433/'
-        + os.environ.get('SQL_DATABASE', 'cms')
-        + '?driver=ODBC+Driver+17+for+SQL+Server'
+        'mssql+pyodbc://{user}%40{server}:{password}@{server}:1433/{db}'
+        '?driver=ODBC+Driver+17+for+SQL+Server'
+    ).format(
+        user=os.environ.get('SQL_USER_NAME', 'cmsadmin'),
+        server=os.environ.get('SQL_SERVER', 'cms1.database.windows.net'),
+        password=os.environ.get('SQL_PASSWORD', 'ENTER_YOUR_PASSWORD'),
+        db=os.environ.get('SQL_DATABASE', 'cms')
     )
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # MS Authentication
     CLIENT_SECRET = os.environ.get('CLIENT_SECRET') or 'ENTER_CLIENT_SECRET_HERE'
     CLIENT_ID = os.environ.get('CLIENT_ID') or 'ENTER_CLIENT_ID_HERE'
     AUTHORITY = "https://login.microsoftonline.com/common"
